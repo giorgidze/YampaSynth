@@ -1,0 +1,78 @@
+YampaSynth Release Notes  
+-------------------------------------------
+
+Description
+-----------
+YampaSynth is a software synthesizer implemented in Haskell, using Yampa domain specific language. It contains little framework of sound generating and sound shaping modules and example applications:
+  * yampasynth-wav is an application which synthesizes a MIDI music and writes result into a WAVE audio file.
+  * yampasynth-openal is an application which synthesizes MIDI music and sends audio data in real-time to a sound card. We use Haskell binding of OpenAL library as an interface to audio hardware.
+  * yampasynth-gtk is an application with simple graphical user interface which allows you to play music with various instruments in real-time using keyboard of your computer. We use Haskell binding of GTK library for GUI programming and Haskell binding of OpenAL library as an interface to audio hardware.
+
+Software synthesizer uses the MIDI standard as a music description and the SoundFont standard as an instrument description.
+
+Implementation is based on the paper "Switched-on Yampa: Declarative Programming of Modular Synthesizers" by George Giorgidze and Henrik Nilsson (http://www.cs.nott.ac.uk/~ggg/publications/padl2008.pdf).
+
+This is mainly a proof of concept, but already useful to some extent.
+             
+Prerequisites
+-------------
+* You will need Glasgow Haskell Compiler (GHC) version 6.8 or higher.
+* Cabal version 1.2 or higher.
+* To install any of the example applications you will need the following packages:
+    * base
+    * array
+    * containers
+    * bytestring
+    * Yampa
+    * HCodecs
+  All of them are either included with GHC or are available for download from Hackage (http://hackage.haskell.org/).
+  
+  Aforementioned dependencies are enough to build yampasynth-wav application.
+  To build yampasynth-openal in addition you will need OpenAL package from Hackage.
+  To build yampasynth-gtk in addition you will need to install GTK and Glade from Hackage.
+
+  For further details about dependencies see cabal package description file (YampaSynth.cabal).
+
+Installation
+------------
+Use standard steps for Cabal package installation.
+
+runhaskell Setup.hs configure
+runhaskell Setup.hs build
+runhaskell Setup.hs install
+
+This will install applications for which your system satisfies dependencies.
+
+Usage
+-----
+Some typical usage example are:
+
+yampasynth-wav -r 44100  -s /path/to/SoundFontFile.sf2  -m /path/to/MidiFile.mid  -o /path/to/result.wav
+
+yampasynth-openal -r 11025 -s /path/to/SoundFontFile.sf2 -m /path/to/MidiFile.mid
+
+yampasynth-gtk -r 22050 -s /path/to/SoundFontFile.sf2
+
+If you have dual core CPU add "+RTS -N2 -RTS" to your options (this works only for yampasynth-openal and yampasynth-gtk).
+You may also try "+RTS -N2 -C -RTS".
+
+Option "-r 44100" sets sampling rate (or sampling frequency) of a synthesizer to 44100 samples per second.
+With yampasynth-wav I recommend to use 44100 Hz, which will generate audio CD quality .wav files.
+With yampasynth-openal I recommend to use 11025 Hz to get a smooth real-time playback without interruption, especially when playing a polyphonic music with several instruments. But sometimes you can afford higher sampling rates, feel free to experiment with this value.
+With yampasynth-gtk I recommend to use 22050 Hz, if you get interruptions decrease it.
+
+SoundFonts
+----------
+SoundFonts are instrument description files. They are used in software and hardware synthesis. Free soundfonts are available for download. Try to google "free soundfont". Here are some links which I have found and used:
+http://soundfonts.homemusician.net/
+http://www.sf2midi.com/
+
+I recommend to search for "FluidR3_GM.SF2" (it is also included in some linux distributions). However the file size is about 150 MB and it takes some time for synthesizer to parse and import it into memory. But quality of the generated audio is very good.
+There are smaller ones e.g. "Ultimate.SF2" which is only 8 MB in size.
+
+OpenAL
+------
+For real-time playback I use Haskell binding of OpenAL library.
+On some linux systems (including my Ubuntu 7.10, OpenAL version libopenal0a 1:0.0.8) there are some issues with original C library, it is very buggy. For example on my system there were problems with ALSA output, so I had to put "(define devices '(native esd))" into my "~/.openalrc" file.
+Also output was not that good on sampling rates other than 11025, 22050 and 44100.
+In general I recommend to use these sampling rates if you experience similar problems.

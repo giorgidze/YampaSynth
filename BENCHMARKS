@@ -1,0 +1,101 @@
+Sat Jan 26 17:49:18 GMT 2008
+
+./bin/yampasynth ./sf2/ultimate_26b_GM.sf2 ./mid/my_guitar_theme.mid 22050 out.wav +RTS -sstderr
+./bin/yampasynth ./sf2/ultimate_26b_GM.sf2 ./mid/my_guitar_theme.mid 22050 out.wav +RTS -sstderr 
+31,570,326,896 bytes allocated in the heap
+308,652,320 bytes copied during GC (scavenged)
+ 10,948,856 bytes copied during GC (not scavenged)
+ 90,902,528 bytes maximum residency (5 sample(s))
+
+      36922 collections in generation 0 (  1.88s)
+          5 collections in generation 1 (  0.01s)
+
+         96 Mb total memory in use
+
+  Task  0 (worker) :  MUT time:   0.00s  (  0.00s elapsed)
+                      GC  time:   0.00s  (  0.00s elapsed)
+
+  Task  1 (worker) :  MUT time:   0.00s  ( 25.25s elapsed)
+                      GC  time:   0.00s  (  0.00s elapsed)
+
+  Task  2 (worker) :  MUT time:  24.91s  ( 25.25s elapsed)
+                      GC  time:   1.88s  (  1.95s elapsed)
+
+  INIT  time    0.00s  (  0.00s elapsed)
+  MUT   time   25.07s  ( 25.25s elapsed)
+  GC    time    1.88s  (  1.95s elapsed)
+  EXIT  time    0.00s  (  0.00s elapsed)
+  Total time   26.95s  ( 27.20s elapsed)
+
+  %GC time       7.0%  (7.2% elapsed)
+
+  Alloc rate    1,259,308,621 bytes per MUT second
+
+  Productivity  93.0% of total user, 92.2% of total elapsed
+
+
+
+Wed 2 Jul, 2008
+
+./bin/yampasynth-wav -r 22050 -s /home/ggg/Music/SoundFont/ultimate_26b_GM.sf2 -m ./mid/guitars.mid -o result.wav +RTS -sstderr 
+Importing MIDI File ...
+Done.
+Importing SoundFontFile ... This may take a while ...
+Done.
+Writing WAV audio data to 'result.wav' ...
+Done.
+89,237,128,984 bytes allocated in the heap
+1,066,675,588 bytes copied during GC (scavenged)
+ 63,873,860 bytes copied during GC (not scavenged)
+ 18,546,688 bytes maximum residency (3 sample(s))
+
+     144363 collections in generation 0 (  7.38s)
+          3 collections in generation 1 (  0.00s)
+
+         36 Mb total memory in use
+
+  INIT  time    0.00s  (  0.00s elapsed)
+  MUT   time  190.92s  (192.67s elapsed)
+  GC    time    7.38s  (  7.44s elapsed)
+  EXIT  time    0.00s  (  0.00s elapsed)
+  Total time  198.30s  (200.11s elapsed)
+
+  %GC time       3.7%  (3.7% elapsed)
+
+  Alloc rate    467,405,952 bytes per MUT second
+
+  Productivity  96.3% of total user, 95.4% of total elapsed
+  
+  
+  
+
+Sun Aug 15 03:09:09 CEST 2010
+
+yampasynth-wav -r 22050 -s ./sf2/ultimate_26b_GM.sf2 -m ./mid/guitars.mid -o result.wav +RTS -sstderr
+yampasynth-wav -r 22050 -s ./sf2/ultimate_26b_GM.sf2 -m ./mid/guitars.mid -o result.wav +RTS -sstderr 
+Importing MIDI File ...
+Done.
+Importing SoundFontFile ... This may take a while ...
+Done.
+Writing WAV audio data to 'result.wav' ...
+Done.
+  34,728,000,712 bytes allocated in the heap
+     234,634,776 bytes copied during GC
+      17,678,476 bytes maximum residency (3 sample(s))
+       2,267,248 bytes maximum slop
+              36 MB total memory in use (1 MB lost due to fragmentation)
+
+  Generation 0: 41644 collections,     0 parallel,  1.34s,  1.44s elapsed
+  Generation 1:     3 collections,     0 parallel,  0.00s,  0.00s elapsed
+
+  INIT  time    0.01s  (  0.00s elapsed)
+  MUT   time   21.00s  ( 21.49s elapsed)
+  GC    time    1.34s  (  1.44s elapsed)
+  EXIT  time    0.00s  (  0.00s elapsed)
+  Total time   22.35s  ( 22.93s elapsed)
+
+  %GC time       6.0%  (6.3% elapsed)
+
+  Alloc rate    1,653,312,722 bytes per MUT second
+
+  Productivity  94.0% of total user, 91.6% of total elapsed

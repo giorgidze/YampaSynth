@@ -1,0 +1,13 @@
+There is division by zero error when "Airfont 340.sf2" is used
+
+For some SoundFont file's (e.g. "ultimate") some instruments I am getting "ticks" in generated audio.
+
+
+Change type of SampleRate to Double
+
+
+When I destroy context and close device, if I try to open device again and set fresh context. This seems like a bug in OpenAL.
+
+|currentContext $= Just context| fails with "Segmentation Fault"
+
+It would be useful in gtk implementation to close and open device every time when "play" and "stop" buttons are pressed. Quick fix would be to just open device only once, this is what I am going to do now.
