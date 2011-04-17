@@ -117,7 +117,7 @@ lastInd p c = do
 process :: (Chunkable a) => Int -> Source -> [Buffer] -> [Buffer] -> MVar (Maybe (Chunk a)) -> MVar () -> IO ()
 process sampleRate' pSource freeBuffers usedBuffers mVarMaybeChunk mVarReply = do
   mChunk <- takeMVar mVarMaybeChunk
-  void $ reply mChunk (\chunk -> do
+  Foreign.void $ reply mChunk (\chunk -> do
     mInd <- lastInd (/= 0) chunk -- we aren't sent chunks with leading zeros
     (f,u) <- reply mInd (\ind -> do  
       (buff,newFree,newUsed) <- if null freeBuffers 
