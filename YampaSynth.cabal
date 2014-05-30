@@ -1,6 +1,6 @@
 name: YampaSynth
 version: 0.1.2
-cabal-Version: >= 1.2
+cabal-Version: >= 1.6
 license: BSD3
 license-file: LICENSE
 copyright: (c) 2007-2010 George Giorgidze and Henrik Nilsson
@@ -10,7 +10,7 @@ homepage: http://www.cs.nott.ac.uk/~ggg/
 stability: experimental
 category: Sound, Music
 synopsis: Software synthesizer
-description: 
+description:
   YampaSynth is a software synthesizer implemented in Yampa, domain specific language embedded in Haskell. It contains a little framework of sound generating and sound shaping modules (e.g. oscillator, amplifier, mixer, envelope generator, filter, etc.) and example applications:
   .
     * "yampasynth-wav" is an application which synthesizes a MIDI music and writes result into a WAVE audio file.
@@ -29,28 +29,35 @@ build-type: Simple
 
 data-files: gui/YampaSynth.glade, README
 
+source-repository head
+  type:     git
+  location: https://github.com/giorgidze/YampaSynth.git
+
 flag wav
   description: Builds yampasynth-wav executable which synthesizes a MIDI music and writes result into a WAVE audio file.
+  default: True
 
 flag openal
   description: Builds yampasynth-openal executable which synthesizes MIDI music and sends audio data in real-time to a sound card. We use Haskell binding of OpenAL library as an interface to audio hardware.
+  default: False
 
 flag gtk
   description: Builds yampasynth-gtk executable with simple graphical user interface which allows you to play music with various instruments in real-time using keyboard of your computer. We use Haskell binding of GTK library for GUI programming and Haskell binding of OpenAL library as an interface to audio hardware.
+  default: False
 
 executable yampasynth-wav
   if flag (wav)
-    build-depends: base < 5, array, bytestring, containers, Yampa, HCodecs
+    build-depends: base < 5, array, bytestring, containers, Yampa, HCodecs >= 0.5
   else
     buildable: False
   hs-source-dirs: src
   main-is: Main/Wav.hs
-  other-modules: SynthBasics, SynthParams, MidiSynth, Player.Wav  
+  other-modules: SynthBasics, SynthParams, MidiSynth, Player.Wav
   ghc-options: -O3 -Wall
   
 executable yampasynth-openal
   if flag (openal)
-    build-Depends: base < 5, array, containers, OpenAL, Yampa, HCodecs
+    build-Depends: base < 5, array, containers, OpenAL, Yampa, HCodecs >= 0.5
   else
     buildable: False
   extensions: FlexibleInstances, UndecidableInstances
@@ -61,7 +68,7 @@ executable yampasynth-openal
 
 executable yampasynth-gtk
   if flag (gtk)
-    build-Depends: base < 5, array, containers, OpenAL, glade, gtk, Yampa, HCodecs  
+    build-Depends: base < 5, array, containers, OpenAL, glade, gtk, Yampa, HCodecs >= 0.5
   else
     buildable: False
   extensions: FlexibleInstances, UndecidableInstances

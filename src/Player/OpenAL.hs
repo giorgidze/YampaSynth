@@ -8,19 +8,18 @@ module Player.OpenAL (
  , Chunk (..)
  ) where
 
-import Data.Audio
+import Foreign (Storable, Ptr, Bits, isSigned, mallocArray, free, pokeElemOff, peekElemOff, sizeOf)
 
 import FRP.Yampa
-
-import Sound.OpenAL 
-
-import Data.Int()
-import Data.IORef
-import Foreign
-import Control.Concurrent  
+import Sound.OpenAL
+import Control.Concurrent
 import Control.Monad
-import Data.Maybe
 import Control.Applicative
+import Data.Audio
+import Data.IORef
+import Data.Int
+import Data.Maybe
+
 
 play :: Int -> Int -> Int -> SF () (Sample, Event ()) -> IO ()
 play sampleRate' sampleNumber' numBuffs sf = do
@@ -71,7 +70,7 @@ initOpenAL numBuffs = do
     Nothing -> fail "opening OpenAL device"
     Just device -> do
       mContext <- createContext device []
-      case mContext of 
+      case mContext of
         Nothing -> fail "opening OpenAL context"
         Just context -> do
           currentContext $= Just context
@@ -81,7 +80,7 @@ initOpenAL numBuffs = do
           return (device,context,pSource,pBuffers)
         
 deInitOpenAL :: Device -> Context -> Source -> [Buffer] -> IO ()
-deInitOpenAL device context pSource pBuffers = do 
+deInitOpenAL device context pSource pBuffers = do
   dequeue pSource
   deleteObjectNames [pSource]
   deleteObjectNames pBuffers
@@ -90,23 +89,12 @@ deInitOpenAL device context pSource pBuffers = do
   whenM (not <$> closeDevice device) $ fail "closing OpenAL device"
   printErrs
     
-data Chunkable a => Chunk a = Chunk {
-    chunkData :: Ptr a
-  , numElems  :: Int
-  } deriving (Eq, Show)
+data Chunk a = Chunk { chunkData :: Ptr a
+                     , numElems  :: Int
+                     } deriving (Eq, Show)
 
- -- does the Bits constraint basically guarantee that it's Integral?
-class (Storable a, Bits a, Audible a) => Chunkable a where
-
-instance (Storable a, Bits a, Audible a) => Chunkable a -- thx copumpkin @ #haskell
-
--- from http://www.haskell.org/pipermail/beginners/2009-January/000690.html (via byorgey @ #haskell)
-untilM :: (Monad m) => (a -> Bool) -> (a -> m a) -> a -> m a
-untilM p f x | p x       = return x
-             | otherwise = f x >>= untilM p f
-
-lastInd :: (Chunkable a) => (a -> Bool) -> Chunk a -> IO (Maybe Int)
-lastInd p c = do 
+lastInd :: (Storable a) => (a -> Bool) -> Chunk a -> IO (Maybe Int)
+lastInd p c = do
   (_,mInd) <- untilM (\(i,x) -> isJust x || i < 0)
                      (\(i,_) -> do e <- peekElemOff (chunkData c) i
                                    return (i-1, if p e then Just i else Nothing)
@@ -114,16 +102,15 @@ lastInd p c = do
                      (numElems c - 1,Nothing)
   return $ (+ 1) <$> mInd
 
-process :: (Chunkable a) => Int -> Source -> [Buffer] -> [Buffer] -> MVar (Maybe (Chunk a)) -> MVar () -> IO ()
+process :: (Storable a, Bits a) => Int -> Source -> [Buffer] -> [Buffer] -> MVar (Maybe (Chunk a)) -> MVar () -> IO ()
 process sampleRate' pSource freeBuffers usedBuffers mVarMaybeChunk mVarReply = do
   mChunk <- takeMVar mVarMaybeChunk
-  Foreign.void $ reply mChunk (\chunk -> do
+  void $ reply mChunk (\chunk -> do
     mInd <- lastInd (/= 0) chunk -- we aren't sent chunks with leading zeros
-    (f,u) <- reply mInd (\ind -> do  
-      (buff,newFree,newUsed) <- if null freeBuffers 
+    (f,u) <- reply mInd (\ind -> do
+      (buff,newFree,newUsed) <- if null freeBuffers
          then do waitForBuffer pSource
-                 let b = head usedBuffers
-                 unqueueBuffers pSource [b]
+                 [b] <- unqueueBuffers pSource (1 :: ALsizei)
                  return (b,[],tail usedBuffers ++ [b])
          else do let h = head freeBuffers
                  return (h, tail freeBuffers, usedBuffers ++ [h])
@@ -147,7 +134,7 @@ printErrs = do e <- get alErrors
 dequeue :: Source -> IO ()
 dequeue pSource = waitForSource pSource >> buffer pSource $= Nothing
 
-createBufferData :: (Chunkable a) => Int -> Chunk a -> Int -> IO (BufferData a)
+createBufferData :: (Storable a, Bits a) => Int -> Chunk a -> Int -> IO (BufferData a)
 createBufferData sampleRate' chunk n = do
   ex <- peekElemOff (chunkData chunk) 0
   let elemSize = sizeOf ex
@@ -160,24 +147,19 @@ createBufferData sampleRate' chunk n = do
                       format
                       (fromIntegral sampleRate')
 
-{-
-untilM_ :: (Functor m, Monad m) => (a -> Bool) -> m a -> m ()
--- untilM_ p f = void $ untilM p (const f) undefined -- isn't there something in this spirit?
-untilM_ p f = do b <- p <$> f
-                 if b then return () else untilM_ p f
-
-void :: (Monad m) => m a -> m ()
-void = (>> return ())
--}
 
 waitForBuffer :: Source -> IO () -- better to express using untilM_
 waitForBuffer s = do b <- (> 0) <$> (get $ buffersProcessed s)
                      if b then return () else threadDelay 10 >> waitForBuffer s
 
-whenM :: (Monad m, Functor m) => m Bool -> m () -> m ()
-whenM test action = join $ flip when action <$> test
-
 waitForSource :: Source -> IO ()
 waitForSource pSource = whenM ((== Playing) <$> (get $ sourceState pSource)) delWait
   where delWait = do threadDelay 10 -- micro seconds
                      waitForSource pSource
+
+untilM :: (Monad m) => (a -> Bool) -> (a -> m a) -> a -> m a
+untilM p f x | p x       = return x
+             | otherwise = f x >>= untilM p f
+
+whenM :: (Monad m, Functor m) => m Bool -> m () -> m ()
+whenM test action = join $ flip when action <$> test

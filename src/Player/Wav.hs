@@ -2,7 +2,7 @@ module Player.Wav (play) where
 
 import Data.Audio
 import Codec.Wav
-import Data.ByteString.Builder
+import Codec.ByteString.Builder
 
 import FRP.Yampa
 
@@ -32,13 +32,13 @@ play filePath sampleRate' signalFunction = do
   hClose h
   correctWavHeader filePath
   
-correctWavHeader :: FilePath -> IO ()  
+correctWavHeader :: FilePath -> IO ()
 correctWavHeader filePath = do
   h <- openFile filePath ReadWriteMode
   hSetBuffering h NoBuffering
   s <- hFileSize h
-  hSeek h AbsoluteSeek 0x04 
+  hSeek h AbsoluteSeek 0x04
   hPut h (toLazyByteString $ putWord32le $ fromIntegral $ s - 0x04 - 4)
-  hSeek h AbsoluteSeek 0x28 
-  hPut h (toLazyByteString $ putWord32le $ fromIntegral $ s - 0x28 - 4)  
+  hSeek h AbsoluteSeek 0x28
+  hPut h (toLazyByteString $ putWord32le $ fromIntegral $ s - 0x28 - 4)
   hClose h
