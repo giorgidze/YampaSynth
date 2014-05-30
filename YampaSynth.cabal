@@ -1,12 +1,12 @@
 name: YampaSynth
-version: 0.1.2
+version: 0.2
 cabal-Version: >= 1.6
 license: BSD3
 license-file: LICENSE
-copyright: (c) 2007-2010 George Giorgidze and Henrik Nilsson
+copyright: (c) 2007-2014 George Giorgidze and Henrik Nilsson
 author: George Giorgidze and Henrik Nilsson
-maintainer: George Giorgidze (GGG at CS dot NOTT dot AC dot UK)
-homepage: http://www.cs.nott.ac.uk/~ggg/
+maintainer: George Giorgidze (giorgidze@gmail.com)
+homepage: http://www-db.informatik.uni-tuebingen.de/team/giorgidze
 stability: experimental
 category: Sound, Music
 synopsis: Software synthesizer
