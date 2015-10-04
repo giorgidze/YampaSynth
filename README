@@ -10,7 +10,7 @@ YampaSynth is a software synthesizer implemented in Haskell, using Yampa domain 
 
 Software synthesizer uses the MIDI standard as a music description and the SoundFont standard as an instrument description.
 
-Implementation is based on the paper "Switched-on Yampa: Declarative Programming of Modular Synthesizers" by George Giorgidze and Henrik Nilsson (http://www.cs.nott.ac.uk/~ggg/publications/padl2008.pdf).
+Implementation is based on the paper "Switched-on Yampa: Declarative Programming of Modular Synthesizers" by George Giorgidze and Henrik Nilsson (http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.109.5312).
 
 This is mainly a proof of concept, but already useful to some extent.
              
